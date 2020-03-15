@@ -30,7 +30,8 @@ app.get("/", (req, res) => {
     res.sendFile(path.join(__dirname, "./public/index.html"));
 });
 
-app.get("/user", (req, res) => {
+// create exercises
+app.put("/api/workouts", (req, res) => {
   db.User.find({})
     .then(dbUser => {
       res.json(dbUser);
@@ -40,7 +41,8 @@ app.get("/user", (req, res) => {
     });
 });
 
-app.post("/submit", ({ body }, res) => {
+// create workouts
+app.post("/api/workouts", ({ body }, res) => {
   db.Note.create(body)
     .then(({ _id }) => db.User.findOneAndUpdate({}, { $push: { notes: _id } }, { new: true }))
     .then(dbUser => {
@@ -51,7 +53,7 @@ app.post("/submit", ({ body }, res) => {
     });
 });
 
-app.get("/populateduser", (req, res) => {
+app.get("/api/workouts/range", (req, res) => {
   db.User.find({})
     .populate("notes")
     .then(dbUser => {
