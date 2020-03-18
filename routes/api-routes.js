@@ -1,31 +1,30 @@
-// do i need ./public here?
-app.get("/", (req, res) => {
-    res.sendFile(path.join(__dirname, "./public/index.html"));
-});
+const db = require("../models");
 
-// create exercises
-app.put("/api/workouts", (req, res) => {
-  db.User.find({})
-    .then(dbUser => {
-      res.json(dbUser);
-    })
-    .catch(err => {
-      res.json(err);
-    });
+module.exports = function(app) {
+
+// add exercises to a workout
+app.put("/api/workouts", ({ body }, res) => {
+  db.Workout.insert(body, (error, data) => {
+    if (error) {
+      res.send(error);
+    } else {
+      res.send(data);
+    }
+  });
 });
 
 // create workouts
 app.post("/api/workouts", ({ body }, res) => {
-  db.Note.create(body)
-    .then(({ _id }) => db.User.findOneAndUpdate({}, { $push: { notes: _id } }, { new: true }))
-    .then(dbUser => {
-      res.json(dbUser);
-    })
-    .catch(err => {
-      res.json(err);
-    });
+  db.Workout.create(body)
+  .then(workout => {
+    res.json(workout);
+  })
+  .catch(err => {
+    res.json(err);
+  });
 });
 
+// get workouts in range
 app.get("/api/workouts/range", (req, res) => {
   db.User.find({})
     .populate("notes")
@@ -36,3 +35,4 @@ app.get("/api/workouts/range", (req, res) => {
       res.json(err);
     });
 });
+}
